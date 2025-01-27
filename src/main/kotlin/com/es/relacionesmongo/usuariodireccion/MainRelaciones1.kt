@@ -2,11 +2,12 @@ package com.es.relacionesmongo.usuariodireccion
 
 import com.es.relacionesmongo.ConexionMongo
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.Date
+import java.util.*
 
 fun main() {
 
@@ -137,7 +138,45 @@ fun main() {
         }
 
     } catch (e: Exception) {
+        e.printStackTrace()
+    }
 
+
+    // QUEREMOS MOSTRAR TODAS LAS NOTICIAS DE UN USUARIO CON LA INFO DEL USUARIO
+    println("******QUEREMOS MOSTRAR TODAS LAS NOTICIAS DE UN USUARIO CON LA INFO DEL USUARIO")
+    val coll = database.getCollection("collNoticias")
+    val pipeline = listOf(
+        Aggregates.lookup(
+            "collUsuarios",
+            "user",
+            "_id",
+            "cliente_info")
+    )
+
+    val resultado = coll.aggregate(pipeline).toList()
+    resultado.forEach {
+        println(it.toJson())
+    }
+
+    println("******QUEREMOS MOSTRAR TODAS LOS USUARIOS CON LA INFO DE LA NOTICIA")
+    val coll2 = database.getCollection("collUsuarios")
+
+    val pipeline2 = listOf(
+        Aggregates.lookup(
+            "collNoticias",
+            "_id",
+            "user",
+            "noticia_info"
+        )
+        , Aggregates.match(
+            Filters.eq("_id", "antonio@gmail.com")
+        )
+
+    )
+
+    val resultado2 = coll2.aggregate(pipeline2).toList()
+    resultado2.forEach {
+        println(it.toJson())
     }
 
 

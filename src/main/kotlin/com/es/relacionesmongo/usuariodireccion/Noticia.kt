@@ -8,5 +8,5 @@ data class Noticia(
     val cuerpo: String,
     val fechaPub: Date,
     val tag: List<String>?,
-    val user: String
+    val user: String // FK
 )
